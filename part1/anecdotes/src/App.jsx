@@ -25,8 +25,8 @@ const App = () => {
 
   }
 
-  const copy = [...points]
   const handleVote = () =>{
+    const copy = [...points]
     copy[selected] += 1
     setPoints(copy)
   }
