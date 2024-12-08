@@ -1,45 +1,10 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios';
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
+import Persons from './components/Persons';
 
-const Filter = (props) => {
-  console.log(props)
-  return (  
-  <div>
-    filter shown with<input onChange={props.findName}/>
-  </div>
-  )
-
-}
-
-const PersonForm = ({ addPerson, handleNameChange, handleNumberChange, newName, newNumber }) => {
-  return(
-      <form onSubmit={addPerson}>
-        <div>
-          <div>
-            name: <input value={newName} onChange={handleNameChange}/>
-          </div>
-          <div>
-            number: <input value={newNumber} onChange={handleNumberChange}/>
-          </div>
-        </div>
-        <div>
-          <button type="submit" >
-            add
-          </button>
-        </div>
-      </form>
-  )
-}
-
-
-const Persons = ({personToShow}) => {
-  return(
-    personToShow.map(person => 
-      <p key={person.id}>{person.name} {person.number}</p>
-      )
-  )
-
-}
+import PersonService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -49,10 +14,10 @@ const App = () => {
   const [showAll, setShowAll] = useState(true)
 
   const hook = () => {
-    axios
-      .get("http://localhost:3001/persons")
-      .then(response => {
-        setPersons(response.data)
+    PersonService
+      .getAll()
+      .then(initialPerson => {
+        setPersons(initialPerson)
       })
   }
 
@@ -63,11 +28,18 @@ const App = () => {
     let personName = persons.map(person => person.name)
     if (personName.includes(newName)) alert(`${newName} is already added to phonebook`)
     else{
-      setPersons( () => persons.concat({name: newName, number: newNumber, id: String(persons.length + 1)}))
+      const newPerson = {
+        name: newName, 
+        number: newNumber
+      }
+      PersonService 
+        .create(newPerson)
+        .then(updatedPerson => {
+          setPersons(persons.concat(updatedPerson))
+        })
     }
     setNewName('')
     setNewNumber('')
-    console.log(personName)
   }
 
   const handleNameChange = (event) =>{
