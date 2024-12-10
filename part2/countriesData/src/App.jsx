@@ -25,7 +25,7 @@ const App = () =>{
         const value = event.target.value
         setSearchValue(value)
 
-        if (value){
+        if (value && allCountries){
             const filteredCountries = allCountries.filter(country => country.name.common.toLowerCase().includes(value.toLowerCase()))
             setCountries(filteredCountries)
         }else{
